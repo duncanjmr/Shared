@@ -1,55 +1,53 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import tools 
-import time
+import tools
+tls = tools.tools()
 
-tl =tools.tools()
-
-G = 6.68*10**(-11)
-pi = np.pi
-
-h0 = 70./(3.1*10**19)
-
-pcrit = 3*h0**2/(8*pi*G)
-
-sec_yr = 3600*24*365
-dadt = lambda x: x*h0* np.sqrt(om_m/(x**3) + om_r/(x**4) + om_l)
+h0=69./(3.08*10**19)
 om_m=0.308
-om_r=10**-5
 om_l=0.692
-a = [1.]
-t = [0]
-dt = 10**7 * sec_yr
+om_r=10**-5
 
-while True:
-    if 0:
-        print(a[0], t[0])
-        time.sleep(0.1)
-    if a[0] < 0:
-        break
-    da = dadt(a[0]) * dt
+a1 = om_r/om_m
+a2 = (om_m/om_l)**(1./3)
 
-    a = [a[0] - da] + a
-    t = [t[0] - dt] + t
+t1= a1**2/(2.*h0*np.sqrt(om_r))
+t2 = 2./3*(a2**(3./2) - a1**(3./2))/(h0*np.sqrt(om_m)) + t1
 
-while t[-1] < t[0] * -1:
-    if a[-1] < 0:
-        break
-    da = dadt(a[-1]) * dt
+sec_yr = 365*24*3600
 
-    a += [a[-1] + da]
-    t += [t[-1] + dt]
+ax = np.linspace(0,3*10**10*sec_yr,100)
 
-T0 = 2.73
-T = [np.log(T0/(n**4))/10 for n in a]
+ar = lambda t: np.sqrt(2*h0*np.sqrt(om_r)*t)
+am = lambda t: (3./2*h0*np.sqrt(om_m)*(t-t1) + a1**(3./2))**(2./3)
+al = lambda t: a2*np.exp(h0*np.sqrt(om_l)*(t-t2))
 
-t_yr = [t[i]/sec_yr for i in range(len(t))]
+age = 1/(np.sqrt(om_l)*h0)*np.log(1/a2) + t2
+print(age)
 
-t_now=0
+c=3*10**8
+ac = lambda t: c*t/(c*age)
 
-plt.ylim(0,a[-1]*1.05)
-plt.plot(t_yr,a)
-plt.plot(t_yr,T)
-plt.plot([t_now, t_now], [1,0], color= "black", ls="--", alpha=0.4)
-plt.text(t_yr[0],1,"Age: " +str(round(-t_yr[0]/(10**9),4)) + " billion years")
-plt.savefig(tl.cameraroll + "expansioncurve")
+if False:
+    plt.plot(ax/sec_yr, ar(ax),c="b")
+    plt.plot(ax/sec_yr, am(ax),c="g")
+    plt.plot(ax/sec_yr, al(ax),c="r")
+    plt.ylim(0,1)
+    plt.savefig(tls.picdir + 'test')
+else:
+    tau=np.linspace(0,11)
+    t=10**tau*sec_yr
+    alfr = np.log10(ar(t))
+    alfm = np.log10(am(t))
+    alfl = np.log10(al(t))
+    alfc = np.log10(ac(t))
+
+    plt.plot(tau,alfr)
+    plt.plot(tau,alfm)
+    plt.plot(tau, alfl)
+    plt.plot(tau, alfc)
+    tcmb = 3*10**5
+    plt.plot([np.log10(tcmb)]*2, [min(alfr),1], ls="--", color="black", alpha=0.4)
+    plt.savefig(tls.picdir+"logtest")
+
+
