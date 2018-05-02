@@ -6,7 +6,7 @@ import json
 class telecon:
     def __init__(self):
         # Specify flask ip adress here (this one works if flask is run on your own computer)
-        self.url = 'http://192.168.0.100:5123'
+        self.url = 'http://192.168.0.150:5123'
 
     def set_location(self,lon_lat,units):
         data = {'location': lon_lat,'units':units}
@@ -28,7 +28,7 @@ class telecon:
         return az_alt
     
     def setup(self):
-        
+        print "Setting up..."
         t = time.localtime()
         string = ''
         for i in t[:6]:
@@ -42,16 +42,21 @@ class telecon:
         
         # Currently nonfuntionalipython
         a = requests.post(self.url+'/setup',data=json.dumps(data))
-        return json.loads(a.content)["calib_coors"]
+        
+        labels = ["coor1","coor2","coor3"]
+        return [json.loads(a.content)[i] for i in labels]
+    
     
     def move(self,az_alt):
         # move a small incriment
+        print "Moving: " + str(az_alt)
         data = {'increment': az_alt}
         req = requests.post(self.url+'/move',data=json.dumps(data))
         response = req.content
         return response
         
     def set_calib(self,n=None):
+        "Setting calibration point"
         if n==None:
             requests.post(self.url+'/set_calib')
         else:
@@ -60,5 +65,28 @@ class telecon:
             response = req.content
             
     def calibrate(self):
-        requests.get(self.url+'/calibrate')
+        print "Calibrating..."
+        req = requests.post(self.url+'/calibrate',data=json.dumps({}))
+        response = json.loads(req.content)
+        if response["response"] == "ok":
+            print "Calibration successful!"
+        elif response["response"] == "failed":
+            print "Calibration failed... :("
+      
+    def search(self,string):
+        print 'Searching for: "' + string + '"'
+        data = {'string': string}
+        req = requests.post(self.url+'/search',data=json.dumps(data))
+        response = json.loads(req.content)
+        print response["String"]
         
+    def track(self,string):
+        print 'Searching for: "' + string + '"'
+        data = {'string': string}
+        req = requests.post(self.url+'/track',data=json.dumps(data))
+        response = json.loads(req.content)
+        print response["String"]
+
+
+
+
