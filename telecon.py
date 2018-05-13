@@ -28,7 +28,7 @@ class telecon:
         return az_alt
     
     def setup(self):
-        print "Setting up..."
+        print("Setting up...")
         t = time.localtime()
         string = ''
         for i in t[:6]:
@@ -49,7 +49,7 @@ class telecon:
     
     def move(self,az_alt):
         # move a small incriment
-        print "Moving: " + str(az_alt)
+        print ("Moving: " + str(az_alt))
         data = {'increment': az_alt}
         req = requests.post(self.url+'/move',data=json.dumps(data))
         response = req.content
@@ -65,27 +65,27 @@ class telecon:
             response = req.content
             
     def calibrate(self):
-        print "Calibrating..."
+        print ("Calibrating...")
         req = requests.post(self.url+'/calibrate',data=json.dumps({}))
         response = json.loads(req.content)
         if response["response"] == "ok":
-            print "Calibration successful!"
+            print("Calibration successful!")
         elif response["response"] == "failed":
-            print "Calibration failed... :("
+            print("Calibration failed... :(")
       
     def search(self,string):
-        print 'Searching for: "' + string + '"'
+        print('Searching for: "' + string + '"')
         data = {'string': string}
         req = requests.post(self.url+'/search',data=json.dumps(data))
         response = json.loads(req.content)
-        print response["String"]
+        print(response["String"])
         
     def track(self,string):
-        print 'Searching for: "' + string + '"'
+        print('Searching for: "' + string + '"')
         data = {'string': string}
         req = requests.post(self.url+'/track',data=json.dumps(data))
         response = json.loads(req.content)
-        print response["String"]
+        print(response["String"])
 
 
 
