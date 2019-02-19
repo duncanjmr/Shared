@@ -11,7 +11,7 @@ class constants:
         
         self.k = 1.3807*10**-23 * u.kg *u.m**2 /(u.K * u.s**2)
         self.k_J = 1.3807*10**-23 * u.J / u.K
-        self.k_ev = 8.617*10**-34 * u.eV / u.K
+        self.k_ev = 8.617*10**-5 * u.eV / u.K
         
         self.h = 6.6261 * 10**-34 * u.kg * u.m**2 / u.s
         self.h_J = 6.6261 * 10**-34 * u.J * u.s
